@@ -17,9 +17,9 @@
       <pubDate>Sat, 04 Aug 2018 18:55:39 -0700</pubDate>
       
       <guid>/post/2018/08/04/the-current-state-of-my-compiler-project/</guid>
-      <description>This is the second post.
+      <description>This is the second post about my C compiler, SCC. Look here for an index.
 In the past couple of months I have been working on the compiler fairly regularly, in manageable 30-40 minute intervals about every day or so, and it has gotten to the point where I know that I can get a working C compiler by just putting in the hours.
-This project has been like drinking from a firehose. There were many concepts which I understood but had not internalized before now.</description>
+This project has been like drinking from a firehose.</description>
     </item>
     
     <item>
@@ -28,8 +28,8 @@ This project has been like drinking from a firehose. There were many concepts wh
       <pubDate>Wed, 10 May 2017 18:47:12 -0500</pubDate>
       
       <guid>/post/2017/05/10/im-making-a-compiler/</guid>
-      <description>It&amp;rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&amp;rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&amp;rsquo;s house. Not that there&amp;rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.
-I have been working on Milton.</description>
+      <description>This is the first post about my C compiler, SCC. Look here for an index.
+It&amp;rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&amp;rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&amp;rsquo;s house. Not that there&amp;rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.</description>
     </item>
     
     <item>
