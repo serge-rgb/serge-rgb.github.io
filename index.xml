@@ -17,7 +17,8 @@
       <pubDate>Sat, 04 Aug 2018 18:55:39 -0700</pubDate>
       
       <guid>/post/2018/08/04/the-current-state-of-my-compiler-project/</guid>
-      <description>In the past couple of months I have been working on the compiler fairly regularly, in manageable 30-40 minute intervals about every day or so, and it has gotten to the point where I know that I can get a working C compiler by just putting in the hours.
+      <description>This is the second post.
+In the past couple of months I have been working on the compiler fairly regularly, in manageable 30-40 minute intervals about every day or so, and it has gotten to the point where I know that I can get a working C compiler by just putting in the hours.
 This project has been like drinking from a firehose. There were many concepts which I understood but had not internalized before now.</description>
     </item>
     
