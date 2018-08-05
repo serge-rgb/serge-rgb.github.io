@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home on sergio</title>
+    <link>/</link>
+    <description>Recent content in Home on sergio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 04 Aug 2018 18:55:39 -0700</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>The current state of my compiler project.</title>
+      <link>/post/2018/08/04/the-current-state-of-my-compiler-project./</link>
+      <pubDate>Sat, 04 Aug 2018 18:55:39 -0700</pubDate>
+      
+      <guid>/post/2018/08/04/the-current-state-of-my-compiler-project./</guid>
+      <description>In the past couple of months I have been working on the compiler fairly regularly, in manageable 30-40 minute intervals about every day or so, and it has gotten to the point where I know that I can get a working C compiler by just putting in the hours.
+This project has been like drinking from a firehose. There were many concepts which I understood but had not internalized before now.</description>
+    </item>
+    
+    <item>
+      <title>I&#39;m making a compiler!</title>
+      <link>/post/2017/05/10/im-making-a-compiler/</link>
+      <pubDate>Wed, 10 May 2017 18:47:12 -0500</pubDate>
+      
+      <guid>/post/2017/05/10/im-making-a-compiler/</guid>
+      <description>It&amp;rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&amp;rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&amp;rsquo;s house. Not that there&amp;rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.
+I have been working on Milton.</description>
+    </item>
+    
+    <item>
+      <title>How the Milton Renderer Works.</title>
+      <link>/post/2016/10/20/how-the-milton-renderer-works./</link>
+      <pubDate>Thu, 20 Oct 2016 15:33:47 -0500</pubDate>
+      
+      <guid>/post/2016/10/20/how-the-milton-renderer-works./</guid>
+      <description>Disclaimer: This document is not up-to-date. I will eventually write a new post that better reflects the current state of Milton, but in the mean time this is good enough.
+After a long time in development, Milton has a brand new renderer. Before now, Milton did all of its rendering on the CPU. The new renderer uses OpenGL to take advantage of the GPU.
+I didn&amp;rsquo;t expect to release OpenGL without problems.</description>
+    </item>
+    
+  </channel>
+</rss>

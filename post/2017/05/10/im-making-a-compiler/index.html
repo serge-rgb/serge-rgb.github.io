@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>I&#39;m making a compiler! | sergio</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link rel="stylesheet" href="/css/theme-override.css">
+    <header>
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <nav>
+    <ul>
+      
+      
+      <li class="pull-left ">
+        <a href="/">/home/sergio</a>
+      </li>
+      
+      
+      <li class="pull-left ">
+        <a href="/">~/home</a>
+      </li>
+      
+      
+      <li class="pull-left ">
+        <a href="/tags/">~/tags</a>
+      </li>
+      
+
+      
+      
+      <li class="pull-right">
+        <a href="/index.xml">~/subscribe</a>
+      </li>
+      
+
+    </ul>
+  </nav>
+</header>
+
+  </head>
+
+  <body>
+    <br/>
+
+<div class="article-meta">
+<h1><span class="title">I&#39;m making a compiler!</span></h1>
+
+<h2 class="date">2017/05/10</h2>
+<p class="terms">
+  
+  
+  
+  
+  
+</p>
+</div>
+
+
+
+<main>
+
+
+<p>It&rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&rsquo;s house. Not that there&rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.</p>
+
+<p>I have been working on Milton. I still love my little paint program and if the gods permit I may get off my proverbial ass and do a new release.</p>
+
+<p>But today I&rsquo;m not here to write about Intel or Milton. I am here to write about my shiny new project! It is a compiler for a superset of the C programming language.</p>
+
+<p>Here&rsquo;s the plan: Take the standard C99 that we all know and (mostly) love and add some new language features. Nothing crazy, mostly things that I often wish I had whenever I write C, but not so many as to change it into something too unlike C.</p>
+
+<p>One thing that would be nice in C would be to make the compiler pick the order of struct members to optimize memory layout. We nearly always organize struct members conceptually and don&rsquo;t care very much about their location in memory. I haven&rsquo;t given much thought to syntax, but perhaps something like this would work out:</p>
+
+<pre><code>auto struct MyStruct {
+    char bar;
+    int foo;
+
+    char my_pretty_variable;
+};
+</code></pre>
+
+<p>In a C struct, if we kept the struct member in this order there would be 3 bytes of padding before member <code>foo</code>. Instead, this compiler would emit code equivalent to:</p>
+
+<pre><code>
+typedef struct MyStruct {
+    int foo;
+    char my_pretty_variable; // No padding!
+    char bar;
+    char pad[2]; // Just use pragma(pack)
+                 // if you really want to get rid
+                 // of the padding at the end
+} MyStruct;
+
+</code></pre>
+
+<p>Also notice how <code>auto struct</code> is also syntactic sugar for a typedef.</p>
+
+<p>Speaking of <code>auto</code>, C++&rsquo;s <code>auto</code> for type inference is a good thing. Let&rsquo;s add that!</p>
+
+<p>I want scc (by the way, I&rsquo;m calling it scc) to prioritize compilation speed and runtime safety over speed optimization. Say you write</p>
+
+<pre><code>int arr[10];
+/* do stuff */
+x = arr[i];
+</code></pre>
+
+<p>scc should generate code that is similar to this:</p>
+
+<pre><code>int arr[10] = {0};
+/* do stuff */
+if ( i &lt; 10 ) {
+    x = arr[i];
+} else {
+    // scc will call a handler for out-of-bounds access, then exit gracefully.
+}
+
+</code></pre>
+
+<p>All variables should be zeroed-out by default and access to arrays should be checked whenever the compiler knows its size. And it should be possible to disable these checks with a <code>#pragma</code>.</p>
+
+<p>For pointers in general, it would be nice to implement something like clang&rsquo;s address-sanitizer.</p>
+
+<p>I would like to support a couple more far-fetched features. How about something like ISPC to write SIMD kernels? How about supporting GPU kernels a la CUDA/OpenCL?</p>
+
+<h2 id="current-status">Current status</h2>
+
+<p>The compiler at the moment is about 1000 lines of C, but it&rsquo;s already a working compiler. It parses simple expressions on integers respecting operator precedence and it emits x86 code, which gets linked into an .exe on windows and an elf binary on linux. That is all there is right now. It can be pretty overwhelming to tackle a big problem like a C compiler, so I&rsquo;m attacking it by starting with something short and simple and iteratively building it into something more complex.</p>
+
+<h2 id="closing-thoughts">Closing thoughts</h2>
+
+<p><img src="/img/noidea.png" alt="noidea" /></p>
+
+<p>I took automata theory in college at least 5 times. (It&rsquo;s really hard to get me to do homework so I tended to fail a lot of classes). I took a compiler class which didn&rsquo;t get much further than simple parsers. Also, I bought a compiler book about a week ago. Other than that, I have no idea what I&rsquo;m doing and I wouldn&rsquo;t be too surprised if I said something really dumb! I&rsquo;m doing this to learn (but I secretly wish to conquer the world).</p>
+
+<p>Tune in for the next blog post! You can also <a href="https://twitter.com/serge_rgb">follow me on twitter</a> if you want. You don&rsquo;t have to. Would be nice, though &lt;3</p>
+
+</main>
+
+    <footer>
+      
+<script>
+(function() {
+  function center_el(tagName) {
+    var tags = document.getElementsByTagName(tagName), i, tag;
+    for (i = 0; i < tags.length; i++) {
+      tag = tags[i];
+      var parent = tag.parentElement;
+      
+      if (parent.childNodes.length === 1) {
+        
+        if (parent.nodeName === 'A') {
+          parent = parent.parentElement;
+          if (parent.childNodes.length != 1) continue;
+        }
+        if (parent.nodeName === 'P') parent.style.textAlign = 'center';
+      }
+    }
+  }
+  var tagNames = ['img', 'embed', 'object'];
+  for (var i = 0; i < tagNames.length; i++) {
+    center_el(tagNames[i]);
+  }
+})();
+</script>
+
+      
+      <hr/>
+      Open-Source | <a href="https://github.com/goodroot/hugo-classic">Github</a> | <a href="https://twitter.com/thegoodroot">Twitter</a>
+      
+    </footer>
+  </body>
+</html>
+
