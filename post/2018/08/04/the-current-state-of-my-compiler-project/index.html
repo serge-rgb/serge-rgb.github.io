@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The current state of my compiler project. | sergio</title>
+    <title>The current state of my compiler project | sergio</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/fonts.css" />
     <link rel="stylesheet" href="/css/theme-override.css">
@@ -49,13 +49,15 @@
     <br/>
 
 <div class="article-meta">
-<h1><span class="title">The current state of my compiler project.</span></h1>
+<h1><span class="title">The current state of my compiler project</span></h1>
 
 <h2 class="date">2018/08/04</h2>
 <p class="terms">
   
   
   
+  
+  Tags: <a href="/tags/scc">scc</a> <a href="/tags/devlog">devlog</a> 
   
   
 </p>
@@ -64,6 +66,8 @@
 
 
 <main>
+<p><em>This is the second post about my C compiler, SCC. Look <a href="/tags/scc">here</a> for an index.</em></p>
+
 <p>In the past couple of months I have been working on the compiler fairly regularly, in manageable 30-40 minute intervals about every day or so, and it has gotten to the point where I know that I can get a working C compiler by just putting in the hours.</p>
 
 <p>This project has been like drinking from a firehose. There were many concepts which I understood but had not internalized before now. Things like how the stack grows backwards, by decrementing the stack pointer instead of incrementing as we normally think of stacks. Or even things like endianness, where I understood them at an intellectual level, but I very seldom had to actually deal with it. The only time I remember caring about endianess before the compiler was briefly when I was working on compression stuff, and even then it was a matter of getting my code to work and then never thinking about it ever again. I was even employed at Intel for a very short time, and even though I will be the first to admit that I didn&rsquo;t do squat while I was there if we&rsquo;re being honest, I did do a lot of stepping through assembly and twiddling various CPU registers in whichever way some spec dictated. But even then I didn&rsquo;t really have to think about endianness that much.</p>
@@ -164,7 +168,7 @@ machAdd(Machine* m, ExprType* dst, ExprType* src) {
 
       
       <hr/>
-      Open-Source | <a href="https://github.com/goodroot/hugo-classic">Github</a> | <a href="https://twitter.com/thegoodroot">Twitter</a>
+      Open-Source | <a href="https://github.com/serge-rgb">Github</a> | <a href="https://twitter.com/serge_rgb">Twitter</a>
       
     </footer>
   </body>
