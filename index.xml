@@ -32,11 +32,11 @@ I have been working on Milton.</description>
     </item>
     
     <item>
-      <title>How the Milton Renderer Works.</title>
-      <link>/post/2016/10/20/how-the-milton-renderer-works./</link>
+      <title>How the Milton Renderer Works</title>
+      <link>/post/2016/10/20/how-the-milton-renderer-works/</link>
       <pubDate>Thu, 20 Oct 2016 15:33:47 -0500</pubDate>
       
-      <guid>/post/2016/10/20/how-the-milton-renderer-works./</guid>
+      <guid>/post/2016/10/20/how-the-milton-renderer-works/</guid>
       <description>Disclaimer: This document is not up-to-date. I will eventually write a new post that better reflects the current state of Milton, but in the mean time this is good enough.
 After a long time in development, Milton has a brand new renderer. Before now, Milton did all of its rendering on the CPU. The new renderer uses OpenGL to take advantage of the GPU.
 I didn&amp;rsquo;t expect to release OpenGL without problems.</description>
