@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Home on sergio</title>
@@ -6,10 +6,20 @@
     <description>Recent content in Home on sergio</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 04 Aug 2018 18:55:39 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 01 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A toy engine. From 0 to Ludum Dare</title>
+      <link>/post/2020/05/01/a-toy-engine.-from-0-to-ludum-dare/</link>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2020/05/01/a-toy-engine.-from-0-to-ludum-dare/</guid>
+      <description>Last November I started working on a toy DX12 renderer. At first my intention was to add a new backend for Milton, but after I got the first triangle going it became pretty addictive to just keep going and see where I could take it. Here&amp;rsquo;s a write-up of what I&amp;rsquo;ve got going!
+My main focus has been was on API design and the core rendering API. I wanted to have an engine I could use to write small games and test apps with as few lines of code as possible.</description>
+    </item>
     
     <item>
       <title>The current state of my compiler project</title>
@@ -29,7 +39,7 @@ This project has been like drinking from a firehose.</description>
       
       <guid>/post/2017/05/10/im-making-a-compiler/</guid>
       <description>This is the first post about my C compiler, SCC. Look here for an index.
-It&amp;rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&amp;rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&amp;rsquo;s house. Not that there&amp;rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.</description>
+ It&amp;rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&amp;rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&amp;rsquo;s house. Not that there&amp;rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.</description>
     </item>
     
     <item>

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Scc on sergio</title>
+    <title>scc on sergio</title>
     <link>/tags/scc/</link>
-    <description>Recent content in Scc on sergio</description>
+    <description>Recent content in scc on sergio</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 04 Aug 2018 18:55:39 -0700</lastBuildDate>
@@ -29,7 +29,7 @@ This project has been like drinking from a firehose.</description>
       
       <guid>/post/2017/05/10/im-making-a-compiler/</guid>
       <description>This is the first post about my C compiler, SCC. Look here for an index.
-It&amp;rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&amp;rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&amp;rsquo;s house. Not that there&amp;rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.</description>
+ It&amp;rsquo;s been almost 3 months since I joined Intel as a BIOS developer. I like it here, and mostly I&amp;rsquo;m relieved that later this year I will celebrate my 30th birthday and not be living in my parent&amp;rsquo;s house. Not that there&amp;rsquo;s anything wrong with that, but my sense of self-worth was starting to get hit because I was not being a productive member of the economy.</description>
     </item>
     
   </channel>

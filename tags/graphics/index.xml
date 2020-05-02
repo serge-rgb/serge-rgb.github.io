@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>graphics on sergio</title>
+    <link>/tags/graphics/</link>
+    <description>Recent content in graphics on sergio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 01 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/graphics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A toy engine. From 0 to Ludum Dare</title>
+      <link>/post/2020/05/01/a-toy-engine.-from-0-to-ludum-dare/</link>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2020/05/01/a-toy-engine.-from-0-to-ludum-dare/</guid>
+      <description>Last November I started working on a toy DX12 renderer. At first my intention was to add a new backend for Milton, but after I got the first triangle going it became pretty addictive to just keep going and see where I could take it. Here&amp;rsquo;s a write-up of what I&amp;rsquo;ve got going!
+My main focus has been was on API design and the core rendering API. I wanted to have an engine I could use to write small games and test apps with as few lines of code as possible.</description>
+    </item>
+    
+  </channel>
+</rss>

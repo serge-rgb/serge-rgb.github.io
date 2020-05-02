@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on sergio</title>
@@ -6,35 +6,53 @@
     <description>Recent content in Tags on sergio</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 04 Aug 2018 18:55:39 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 01 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Devlog</title>
+      <title>devlog</title>
       <link>/tags/devlog/</link>
-      <pubDate>Sat, 04 Aug 2018 18:55:39 -0700</pubDate>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/devlog/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Milton</title>
-      <link>/tags/milton/</link>
-      <pubDate>Thu, 20 Oct 2016 15:33:47 -0500</pubDate>
+      <title>engine</title>
+      <link>/tags/engine/</link>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>/tags/milton/</guid>
+      <guid>/tags/engine/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Scc</title>
+      <title>graphics</title>
+      <link>/tags/graphics/</link>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/graphics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>scc</title>
       <link>/tags/scc/</link>
       <pubDate>Sat, 04 Aug 2018 18:55:39 -0700</pubDate>
       
       <guid>/tags/scc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>milton</title>
+      <link>/tags/milton/</link>
+      <pubDate>Thu, 20 Oct 2016 15:33:47 -0500</pubDate>
+      
+      <guid>/tags/milton/</guid>
       <description></description>
     </item>
     

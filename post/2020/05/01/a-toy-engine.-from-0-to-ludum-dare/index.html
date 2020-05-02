@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Sergio González">
+    <title>A toy engine. From 0 to Ludum Dare | sergio</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link rel="stylesheet" href="/css/theme-override.css">
+    <header>
+
+  <nav>
+    <ul>
+      
+      
+      <li class="pull-left ">
+        <a href="/">~/sergio</a>
+      </li>
+      
+      
+      <li class="pull-left ">
+        <a href="/">~/home</a>
+      </li>
+      
+      
+      <li class="pull-left ">
+        <a href="/tags/">~/tags</a>
+      </li>
+      
+
+      
+      
+      <li class="pull-right">
+        <a href="/index.xml">~/subscribe</a>
+      </li>
+      
+
+    </ul>
+  </nav>
+</header>
+
+  </head>
+
+  <body>
+    <br/>
+
+<div class="article-meta">
+<h1><span class="title">A toy engine. From 0 to Ludum Dare</span></h1>
+
+<h2 class="date">2020/05/01</h2>
+<p class="terms">
+  
+  
+  
+  
+  Tags: <a href="/tags/engine">engine</a> <a href="/tags/graphics">graphics</a> <a href="/tags/devlog">devlog</a> 
+  
+  
+</p>
+</div>
+
+
+<div class="content-wrapper">
+  <main>
+    <p>Last November I started working on a toy DX12 renderer. At first my intention was to add a new backend for Milton, but after I got the first triangle going it became pretty addictive to just keep going and see where I could take it. Here&rsquo;s a write-up of what I&rsquo;ve got going!</p>
+<p>My main focus has been was on API design and the core rendering API. I wanted to have an engine I could use to write small games and test apps with as few lines of code as possible. It needed to be flexible enough to be used as a test bed to try out different graphics techniques but I also wanted it to be useful as an actual game engine.</p>
+<p>On April I participated on Ludum Dare 46 using it, and barring some unexpected bugs it was largely a success. Some aspects could have gone better, but for the most part it has ended up being a nice API to use and I&rsquo;m still having as much fun hacking on it as I did when I got the first triangle going.</p>
+<p>In this post I will go through how the system has grown from a triangle on the screen to a toy engine. I&rsquo;ll be mostly focusing on the core render API.</p>
+<p>The intended audience are people with a little background in graphics programming or people who are interested in writing a 3d engine from scratch. It&rsquo;s not super technical but I do throw around many graphics terms that I don&rsquo;t bother to define since this is already a lot of text.</p>
+<h2 id="the-first-triangle-and-setting-up-pipeline-states">The first triangle, and setting up pipeline states</h2>
+<p>I started by looking at some sample code and copying things over while looking at the <a href="https://microsoft.github.io/DirectX-Specs/">functional spec</a>.</p>
+<p><img src="/img/eng_triangle.gif" alt="a triangle"></p>
+<p>A lot of the work that I put in to get the triangle going was the bare minimum necessary, but I also tried to set things up a bit in places where I expected. One of those things was setting up PSOs</p>
+<p>One of my goals with this project is to write more than one backend, so the API hides all of the DX12-specific details.</p>
+<p>The actual API to create pipeline states looks something like the following. It wasn&rsquo;t quite like this at the time of the first triangle, but it was pretty close. The main difference is that I used to pass a path to the shaders and now I compile things offline and pass in the bytecode:</p>
+<pre><code>PipelineStateHandle gpuGraphicsPipelineState(
+                        u8* vertexByteCode,
+                        u64 szVertexByteCode,
+                        u8* pixelByteCode,
+                        u64 szPixelByteCode,
+                        const PSOFlags psoFlags);
+</code></pre><p>It&rsquo;s a pretty common pattern in game engines to use handles to reference data, and my engine is no exception. Every handle is a type-safe index into some array. Most handles are defined in a single line like so: <code>struct ObjectHandle { u64 idx; };</code> The reason I do it this way is type safety.</p>
+<p>As a quick aside while on the topic of handles, the zero-th member of each array is always some sentinel value. The most common bugs in game engines are invalid handles, so while 0-valued handles are invalid in this engine, we use some very conspicuous value for the zero-th element of any array that is indexed by handles. A 0xFF00FF flat-colored material, for example. This works super well with initializing everything to zero by default and while it doesn&rsquo;t handle out-of-bounds errors, it does handle a very common case of trying to use something that has been explicitly marked as invalid.</p>
+<p>PSO handles are a little different in that they consist of an index and also a type, so the engine can distinguish between raytracing pipeline states and regular compute and graphics pipeline states. This way functions like <code>gpuSetPipelineState(...)</code> can be a single function instead of many .</p>
+<p>In this engine we create all the PSOs in a single function. We need PSOs for meshes, UI elements, certain test cases, and SDF objects, more on all of that later! All of them get explicitly created in a single place. It&rsquo;s a simple solution and I haven&rsquo;t needed anything more complicated.</p>
+<p>One early decision was to go with a bindless binding model, where there&rsquo;s just a giant descriptor table and we &ldquo;bind&rdquo; resources by passing indices into an unbounded array. The only reason I went with bindless is that it seemed like less work and simpler PSO management code.</p>
+<p>So, we have a nice triangle and the beginnings of a render API. What&rsquo;s next? Texturing.</p>
+<p><img src="/img/eng_textured.gif" alt="textured quad"></p>
+<p>Since we already have our fancy PSO code with its samplers and SRV tables all set up, texturing is just a matter of passing an index and sampling a texture in the shader. We have presumably also set things up so that it&rsquo;s easy to upload textures to the GPU, which in D3D12 is not a trivial thing.</p>
+<p>While we&rsquo;re at it, might as well write an OBJ loader and load something!</p>
+<h2 id="loading-a-bunny-and-some-notes-on-memory-management">Loading a bunny, and some notes on memory management</h2>
+<p><img src="/img/eng_firstbunny.gif" alt="textured bunny"></p>
+<p>And yes, I did use the same dog picture to texture the bunny, because why not. You might notice that besides the model being different, this gif has some nice antialiasing going. All I did was set up a multisampled render target and do a resolve at the end of the frame. Speaking of which, in the spirit of simplicity, the render frame fills a single command-list and then executes it in the same frame right before presenting. As of today things are set up so I could set up something more involved without much trouble, but this works for now. It&rsquo;s not like I&rsquo;m sending tons of work to the GPU. There&rsquo;s also still no command list abstraction, since we are using a single command list for everything. This will probably change as I start to do more stuff each frame. I will likely start filling command lists in parallel before I decide to buffer a frame of work.</p>
+<p>The OBJ loader function looks like this:</p>
+<pre><code>Mesh objLoad(Platform* plat, char* path, Lifetime life);
+</code></pre><p>Pretty self-explanatory if I do say so myself, but you might be curious to know what that <code>Lifetime</code> thingie is. For most use cases, a lifetime is an enum value of <code>Lifetime_App</code>, <code>Lifetime_World</code> or <code>Lifetime_Frame</code>, meaning the the allocation will either last forever, or until the &ldquo;World&rdquo; (aka Level) ends, or when the Frame ends. We do this instead of malloc and free and it works pretty well. For more involved cases you can do <code>Lifetime customLife = lifetimeBegin()</code> and then discard it with <code>lifetimeEnd()</code> With this system, you can use <code>customLife</code> anywhere you would use <code>Lifetime_App</code> or <code>Lifetime_Frame</code>. <code>lifetimeEnd()</code> will clear to 0 anything that was allocated for that lifetime, so bugs are really easy to find.</p>
+<p>3rd party APIs often ask you to give custom allocators, and so I also have some functions to make third party systems work with this scheme. In most respects Lifetimes are exactly the same as arenas (aka stack allocators)[1] except that they are indices into a global array of heaps instead of pointers to an allocator. There&rsquo;s nothing you can do with this that you couldn&rsquo;t do with arenas, but I like using these instead of passing around allocators.</p>
+<p>The whole engine follows a zero-is-initailization philosophy [1]. All allocations return zeroed-out memory and all stack declarations are initialized to zero. For this reason we do not support constructors and destructors, but the huge win of not having uninitialized-memory bugs is more than worth it, and we never need to call <code>free()</code>. To be honest, I haven&rsquo;t spent a second missing RAII since I stopped using it.</p>
+<p>And while we&rsquo;re on the topic of memory management, GPU memory management works a bit different.</p>
+<p>GPU memory is allocated with a single function, which in DX12 for now directly maps to a CreateCommittedResource resource call.</p>
+<pre><code>ResourceHandle    gpuCreateResource(
+        size_t numBytes,
+        char* debugName = nullptr,
+        GPUHeapType heapType = GPUHeapType_Upload,
+        ResourceState state = ResourceState_GenericRead,
+        u32 alignment = 0,
+        CreateResourceFlags flags = CreateResourceFlags_None);
+</code></pre><p>I really like the Dear imgui API design style of using default arguments that make sense. Most allocations are for quick constant buffers, and the default arguments reflect that. Here&rsquo;s a typical use case, taken from the engine:</p>
+<pre><code>Material m = {};
+m.gpuResource = gpuCreateResource(
+        sizeof(MaterialConstantsCB),
+        &quot;Material constants&quot;);
+</code></pre><p>Debug names are ignored in release, but they are really useful when debugging. I am thinking of actually making that parameter a requirement, since sometimes I&rsquo;m lazy and I don&rsquo;t add the name until I need it.</p>
+<p>Freeing GPU memory is done with:</p>
+<p><code>void gpuMarkFreeResource(ResourceHandle&amp; res, u64 atFrame);</code></p>
+<p>which just means &ldquo;free this resource once frame <code>atFrame</code> has finished rendering&rdquo;.</p>
+<p>The most common allocation case is creating per-frame resources, in which we just call <code>gpuMarkFreeResource(resourceHandle, gpu()-&gt;frameCount);</code> right after creating the resource, though it might be worth it to add some syntactic sugar in the form of a <code>gpuCreateTransientResource(...)</code> or something like that.</p>
+<p>You might see the <code>gpu()</code> call and wonder what that is, which is a nice segway to Globals, which are closely related to hot-reloading.</p>
+<h2 id="globals-and-hot-reloading">Globals and Hot reloading</h2>
+<p>The engine supports hot reloading of both shader code and C++ code. The way this is done on the C++ side is by separating the platform layer from the engine/game layer. The platform layer being the executable, with the engine and game code living in a DLL. When not in release mode, every frame the platform layer will check if the DLL has been written to (and has finished being written to), and then load the code with <code>LoadLibraryA(...)</code>. The only way this is different from Handmade Hero[1] is that instead of passing a pointer to game memory, each game system has an entry in a global table of pointers. When the app starts up, it asks each system how much memory it needs, by means of a callback, and sets up the memory. This table of globals is patched up again everytime the DLL reloads.</p>
+<p><img src="/img/eng_cppreload.gif" alt="hot C++ reloading"></p>
+<p>While we&rsquo;re getting C++ hot reloading, might as well touch on HLSL reloading. Thankfully, it&rsquo;s much less involved, architecturally speaking. There&rsquo;s a separate program that calls <code>D3DCompileFromFile</code> for our graphics and compute shaders, then puts everything in a simple binary file. The platform layer checks every frame if this binary file has been changed. Remember the big explicit list of PSOs? We just create them again once the binary file has changed.</p>
+<p>But I&rsquo;m getting ahead of myself! Before I got hot reloading working I actually dived into physically based rendering, which was another big hole in my piecemeal graphics programming education before this project.</p>
+<h2 id="pbr-and-ui">PBR and UI</h2>
+<p><img src="/img/eng_pbr.gif" alt="PBR"></p>
+<p>Ooooh yes, the engine is starting to look good. For PBR I decided to go to the source and read some of the main papers on the topic. In retrospect, I think this was just making things unnecessarily painful on myself. If I could go back in time and give me some advice it would be to just read Google&rsquo;s <a href="https://google.github.io/filament/Filament.md.html">Filament documentation</a> to really understand PBR. Also, to invest in toilet paper and hand sanitizer.</p>
+<p>To be honest, making things look as photorealistic as possible isn&rsquo;t a huge interest of mine. In part because I think the problem is mostly solved (for offline rendering at least), and in part because I love the plumbing aspect of graphics a bit more than the aesthetic aspect or even the theory.</p>
+<p>But anyway, while it was nice to learn about what radiant flux means and though I did find microfacet models really beautiful, the end result is not much different from simply copy and pasting some code from the interwebs.</p>
+<p>I have to say, PBR did mess my brain up in that for weeks I couldn&rsquo;t look at things in the real world without thinking of their BRDF.</p>
+<p>Now, of course I needed to have some way to edit materials at runtime, so I did what any well adjusted member of society with a healthy social life would do and spent a week writing my own UI system instead of using Dear Imgui like everyone else.</p>
+<p><img src="/img/eng_sliders.gif" alt="Sliders"></p>
+<p>I&rsquo;m absolutely not against using libraries, but I had two main reasons to do this. Number one, I wanted the UI used for the in-game menus to be the same UI in which the editor was written, and number two, I kind of felt like it. Also, it did help me a lot with ironing out some of the kinks in my fledgling engine.</p>
+<h2 id="a-little-sdf-experiment">A little SDF experiment</h2>
+<p>At this point I was obsessed with Media Molecule&rsquo;s Dreams. I read everything I could find about their tech and a lot of my free time was spent reading about volumetric billboards and point clouds and gigavoxels. I decided to start going in that direction</p>
+<p><img src="/img/eng_sphere.gif" alt="Raytraced sphere"></p>
+<p>This is just a raytraced sphere with rays coming out of a full-screen quad, I used it as a reference to be used later to debug the SDF. The bunny intersects the sphere on purpose, since I was writing to the depth buffer from the pixel shader to make the hybrid system work (early Z be damned).</p>
+<p>I&rsquo;m a little surprised that i don&rsquo;t have screenshots or videos of what came next, but I did end up with a simple SDF solution. The next step was similar to the gif above but it was raymarching into a SDF sphere. The &ldquo;sphere&rdquo; was a single &ldquo;edit&rdquo; in the media-molecule sense of the word, and the plan was to have entities in the world be comprised of lists of edits, I was 100% going for a poor man&rsquo;s Dreams.</p>
+<p>I worked a bit on trying to get the SDF to look lo-fi in a good way, but I learned that sometimes aliasing just looks like aliasing, and getting things to look good demands a lot of effort whether you are going for low fidelity or high fidelity. You can&rsquo;t just use your bed hair as a reasonable hair style. The just-out-of-bed look requires a lot of hair wax and an appropriate bone structure.</p>
+<p>By this time it was the Christmas break. Two days before Christmas I learned two very important things. Number one is that my pain threshold is apparently a lot higher than I previously believed, and number two is that a burst appendix and the following peritonitis is decidedly not fun. After being super obsessed for what I can&rsquo;t believe was only two months, I had an awful forced two-week break in which I didn&rsquo;t do any programming.</p>
+<p>I&rsquo;m not 100% sure what happened, but coming back from my &ldquo;vacation&rdquo;, I didn&rsquo;t really want to keep working on SDF. So I resolved to switch gears. My next step was DXR.</p>
+<h2 id="shadows-and-ray-tracing">Shadows and Ray tracing</h2>
+<p><img src="/img/eng_rtx.gif" alt="RTX"></p>
+<p>I implemented vanilla depthmap shadows and raytraced shadows.</p>
+<p>For depthmap shadows, it was necessary to improve the core render API to handle render targets. I kept the minimalist philosophy and ended up with something that looks like this:</p>
+<pre><code>RenderTarget*     gpuCreateColorTarget(int width, int height, ResourceState state, RTFlags flags = RTFlags_None);
+RenderTarget*     gpuCreateDepthTarget(int width, int height, RTFlags flags = RTFlags_None);
+RenderTarget*     gpuCreateDepthTargetForCubeFace(TextureCube* cube, int width, int height, CubeFace face);
+RenderTarget*     gpuCreateColorTargetForCubeFace(TextureCube* cube, int width, int height, CubeFace face);
+void              gpuSetRenderTargets(RenderTarget* rtColor, RenderTarget* rtDepth);
+void              gpuClearRenderTargets(RenderTarget* color, RenderTarget* depth);
+void              gpuMarkFreeColorTarget(RenderTarget* t, u64 atFrame);
+void              gpuMarkFreeDepthTarget(RenderTarget* t, u64 atFrame);
+</code></pre><p>RenderTarget is an opaque type that internally is backend-specific. There&rsquo;s also a function to get the swapchain render target, which is not created by the user.</p>
+<p>If I thought peritonitis was painful, it didn&rsquo;t really compare to setting up a raytracing pipeline state. I&rsquo;ll spare you the bloody tale, but the end result was actually a nice and simple API. To give you an idea, here&rsquo;s the (slightly edited) place where I set up my acceleration structures in the engine:</p>
+<pre><code>TLAS* tlas = gpuCreateTLAS(gKnobs.maxObjects);
+
+ObjectIterator* iter = objectIterateBegin(/*stuff goes here*/);
+while (objectIterateHasNext(iter)) {
+   ObjectHandle h = objectIterateNext(iter);
+   gpuAppendToTLAS(tlas, getBLAS(h), transformForObject(h));
+}
+objectIterateEnd(iter);
+gpuBuildTLAS(tlas);
+
+gpuSetRaytracingPipeline(wr-&gt;dxrPipeline);
+
+</code></pre><p>Which looks very clean to me. The actual creation of the raytracing pipeline state is also pretty clean. I mentioned before that one of my main focus for this was having good API design, and actually wrapping DXR into something that&rsquo;s nice to use is one of the things that makes me proud in that respect.</p>
+<p>You don&rsquo;t have to pay much attention to this code, I only put it here to show that it&rsquo;s concise and not ugly at all.</p>
+<pre><code>if (gKnobs.withRtx) {
+   RaytracingPSODesc desc = {};
+
+   ShaderHeader h = shaderCode-&gt;headers[Shader_Raytracing];
+
+   desc.byteCode = (u8*)shaderCode-&gt;bytes + h.offset;
+   desc.szByteCode = h.numBytes;
+
+   // Hit group 0
+   {
+      RaytracingHitgroup hitgroup = {};
+      hitgroup.name = L&quot;CastHitGroup&quot;;
+      hitgroup.closestHit = L&quot;TraceShadowRays&quot;;
+      SBPush(desc.sHitGroups, hitgroup, Lifetime_Frame);
+   }
+
+   // Hit group 1
+   {
+      RaytracingHitgroup hitgroup = {};
+      hitgroup.name = L&quot;ShadowHitGroup&quot;;
+      hitgroup.closestHit = L&quot;ShadowHit&quot;;
+      SBPush(desc.sHitGroups, hitgroup, Lifetime_Frame);
+   }
+
+   SBPush(desc.sMissIds, L&quot;Miss&quot;, Lifetime_Frame);  // Miss 0
+   SBPush(desc.sMissIds, L&quot;ShadowMiss&quot;, Lifetime_Frame);  // Miss 1
+   r.dxrPipeline = gpuCreateRaytracingPipeline(desc);
+}
+</code></pre><p>Now, I&rsquo;m making a lot of choices under the hood that someone else might not want to make, and my only use case so far is hard shadows, so it might get uglier in the future.</p>
+<p>It was around this time that I resolved to use this engine for the next Ludum Dare. The average person running a game jam game will not have an RTX video card, so I decided to switch gears yet again.</p>
+<h2 id="point-shadows-ludum-dare-and-conclusion">Point shadows, Ludum Dare and Conclusion</h2>
+<p><img src="/img/eng_pointlight.gif" alt="Point light"></p>
+<p>(A point light test. The dark shadows are all from the same light source.)</p>
+<p>At this point, my lights were half-baked spotlights. The main thing that I thought was missing at this point was to either finish the spot light implementation or do some other kind of light. I decided that the most flexible light was the point light, so I went back to my depth shadow implementation.</p>
+<p>I scrapped the spotlight depth shadows and switched to point shadows. I&rsquo;m not doing mesh shaders or anything like that, just rendering everything 6 times per light and then doing some simple PCF post filtering. I&rsquo;m using white noise which is probably a bad idea. I should switch to blue noise.</p>
+<p>Once I had this, I took about a month or so out of my graphics work to make everything solid and iron out the countless minutiae that comes into turning this from a renderer into an engine. Things like deploying and packing the game and handling screen resizing. I used a macbook with bootcamp as a &ldquo;low end&rdquo; target and I did things like leave the engine running overnight to try and make sure that things were solid. Once I knew I wasn&rsquo;t crashing and wasn&rsquo;t leaking and my test game was running well on the macbook, I was ready for Ludum Dare!</p>
+<p><img src="/img/eng_ldjam.png" alt="Ludum dare 1">
+<img src="/img/eng_ldjam.gif" alt="Ludum dare 2"></p>
+<p>Writing the UI system from scratch ended up being a good thing, IMO, since the game has pretty nice UI for a Ludum Dare Compo game.</p>
+<p>If you made it all the way to the end of this post, my hat goes off to you.
+The engine sits at a little under 9000 lines of code, as measured by cloc. Not counting 3rd party libraries (I use stb, meow hash and an mp3 loader). I think it does a lot with those lines.</p>
+<p>There are some things I didn&rsquo;t mention. There are super important graphics details like making everything gamma correct and doing dithering to avoid banding that are not a lot of code but have huge implications. I have a cool testing system to quickly write up little functional tests. I also do some trivial unit tests for the few cases where I found it useful.</p>
+<p>I&rsquo;m not sure where I&rsquo;ll take it from there. Last night I worked on a texture sampling test since I wanted to play around with different ways of sampling textures. I don&rsquo;t have a plan in place and if I have learned anything about devlogs is that you should only talk about what you have done, not what you plan on doing.</p>
+<p>I&rsquo;ll just say that I&rsquo;m still excited to work on this. Keeping the code nice and clean makes it so I&rsquo;ve got a very positive association with it. I have a zero-bug policy, which means I don&rsquo;t work on anything unless I believe there are zero bugs in the code. This has been a huge win in terms of psychology. I enjoy opening up this project and tinkering with it, there&rsquo;s none of that grudging feeling that comes from a codebase that&rsquo;s a little bit broken.</p>
+<p>[1] A lot of the things I do come from Handmade Hero, so I&rsquo;m just going to have an umbrella foot-note here to catch all the instances where my code style has been influenced by it.</p>
+
+    <a href="/"> >> Home</a>
+  </main>
+</div>
+    <footer>
+      
+<script>
+(function() {
+  function center_el(tagName) {
+    var tags = document.getElementsByTagName(tagName), i, tag;
+    for (i = 0; i < tags.length; i++) {
+      tag = tags[i];
+      var parent = tag.parentElement;
+      
+      if (parent.childNodes.length === 1) {
+        
+        if (parent.nodeName === 'A') {
+          parent = parent.parentElement;
+          if (parent.childNodes.length != 1) continue;
+        }
+        if (parent.nodeName === 'P') parent.style.textAlign = 'center';
+      }
+    }
+  }
+  var tagNames = ['img', 'embed', 'object'];
+  for (var i = 0; i < tagNames.length; i++) {
+    center_el(tagNames[i]);
+  }
+})();
+</script>
+
+      
+      <hr/>
+      Open-Source | <a href="https://github.com/serge-rgb">Github</a> | <a href="https://twitter.com/serge_rgb">Twitter</a>
+      
+    </footer>
+  </body>
+</html>
+
