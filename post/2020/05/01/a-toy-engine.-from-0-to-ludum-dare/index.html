@@ -170,7 +170,7 @@ m.gpuResource = gpuCreateResource(
 <h2 id="shadows-and-ray-tracing">Shadows and Ray tracing</h2>
 <p><img src="/img/eng_rtx.gif" alt="RTX"></p>
 <p>First I implemented vanilla depth-map shadows, and then moved on to raytraced shadows.</p>
-<p>For depth-map shadows, it was necessary to improve the core render API to handle render targets. I kept the minimalist philosophy and ended up with something that looks like this: (this API )</p>
+<p>For depth-map shadows, it was necessary to improve the core render API to handle render targets. I kept the minimalist philosophy and ended up with something that looks like this:</p>
 <pre><code>RenderTarget*     gpuCreateDepthTarget(int width, int height, RTFlags flags = RTFlags_None);
 </code></pre><p><code>RenderTarget</code> is an opaque type. There are also functions to create color targets corresponding to either a texture or the face of a cube map, and a function to get the swapchain render target, which is not created by the user. They all look similar to this.</p>
 <p>The depth shadows at first were a standard implementation of spotlight shadows, and my intention was to use it as a reference for a ray-traced implementation on DXR.</p>
@@ -233,7 +233,7 @@ gpuSetRaytracingPipeline(wr-&gt;dxrPipeline);
 <p>There are some things I didn&rsquo;t mention. There are super important details like making everything gamma correct and doing dithering to avoid banding that are not a lot of code but are still pretty important. I have a cool testing system to quickly write up little functional tests. I also do some trivial unit tests for the few cases where I found it useful.</p>
 <p>I&rsquo;m not sure where I&rsquo;ll take it from there. Last night I worked on a texture sampling test since I wanted to play around with different ways of sampling textures. I don&rsquo;t have a plan in place and if I have learned anything about devlogs is that you should only talk about what you have done, not what you plan on doing.</p>
 <p>If you made it to the end of the post, my hat&rsquo;s off to you! Thanks for reading. I hope it was entertaining!</p>
-<p>[1] A lot of the things I do come from Handmade Hero, so I&rsquo;m just going to have an umbrella foot-note here to catch all the instances where my code style has been influenced by it.</p>
+<p>[1] A lot of the things I do come from <a href="https://handmadehero.org/">Handmade Hero</a>, so I&rsquo;m just going to have an umbrella foot-note here to catch all the instances where my code style has been influenced by it.</p>
 
     <a href="/"> >> Home</a>
   </main>
